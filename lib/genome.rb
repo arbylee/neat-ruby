@@ -80,16 +80,7 @@ class Genome
     if rand < ADD_LINK_MUTATE_CHANCE
       link_mutate
     end
-  end
 
-  def sorted_genes
-    @genes.sort_by { |gene| gene.in }
-    sorted = []
-    reached_nodes = input_ids
-    while sorted.length < @genes.length
-      next_layer = @genes.select { |g| g.in }
-    end
-
-    return sorted
+    #Add more mutations
   end
 end

@@ -33,10 +33,6 @@ class Network
     return @nodes.select { |node| node.is_hidden_node? }
   end
 
-  def sorted_genes
-    @genome.sorted_genes
-  end
-
   def sorted_nodes
     sorted = input_nodes
     sorted_ids = input_nodes.collect { |node| node.id }

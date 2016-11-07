@@ -12,18 +12,19 @@ primes = [2,3,5,7,11,13,17,19,23,29,31]
   else
     expected = 0
   end
-  training_set << {input: i, expected_output: expected}
+  training_set << {inputs: [i], expected_output: expected}
 end
 
 def evaluate_network network, training
   fitness = 0
   training.each do |tdata|
+    if network.input_nodes.length != tdata[:inputs].length
+      raise RuntimeError.new("Length of inputs does not match number of input nodes. inputs: #{tdata[:inputs]}, # of inputs #{tdata[:inputs]}, # of nodes: #{network.input_nodes.length}")
+    end
 
-    # FIXME handle multiple inputs in training data. Do a zip with inputs or something. Need to ensure order is preserved
-    network.nodes.each do |node|
-      if node.is_input_node?
-        node.value = tdata[:input]
-      end
+    input_node_pairs = network.input_nodes.zip(tdata[:inputs])
+    input_node_pairs.each do |node, input_value|
+      node.value = input_value
     end
 
     # Must run this in layers
