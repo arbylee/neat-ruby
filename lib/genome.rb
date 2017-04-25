@@ -1,6 +1,7 @@
 class Genome
   ADD_NODE_MUTATE_CHANCE = 0.5
   ADD_LINK_MUTATE_CHANCE = 0.5
+  MUTATE_WEIGHTS_CHANCE = 0.8
 
   attr_reader :genes, :input_ids, :output_ids
   def initialize
@@ -79,6 +80,16 @@ class Genome
 
     if rand < ADD_LINK_MUTATE_CHANCE
       link_mutate
+    end
+
+    if rand < MUTATE_WEIGHTS_CHANCE
+      @genes.each do |gene|
+        if rand < 0.9
+          gene.weight = gene.weight + rand * 0.1 * 2 - 0.1
+        else
+          gene.weight = rand * 4 - 2
+        end
+      end
     end
 
     #Add more mutations

@@ -5,14 +5,19 @@ require_relative './network'
 
 training_set = []
 primes = [2,3,5,7,11,13,17,19,23,29,31]
+pairs = [[2,2], [3,5], [8,8], [6,5], [4,5], [4,4], [3,1], [1,9], [9,8], [6,1]]
 
-(1..33).each do |i|
-  if primes.include? i
-    expected = 1
-  else
-    expected = 0
-  end
-  training_set << {inputs: [i], expected_output: expected}
+#(1..33).each do |i|
+#  if primes.include? i
+#    expected = 1
+#  else
+#    expected = 0
+#  end
+#  training_set << {inputs: [i], expected_output: expected}
+#end
+
+pairs.each do |x, y|
+  training_set << {inputs: [x, y], expected_output: x*y}
 end
 
 def evaluate_network network, training
@@ -22,30 +27,18 @@ def evaluate_network network, training
       raise RuntimeError.new("Length of inputs does not match number of input nodes. inputs: #{tdata[:inputs]}, # of inputs #{tdata[:inputs]}, # of nodes: #{network.input_nodes.length}")
     end
 
-    input_node_pairs = network.input_nodes.zip(tdata[:inputs])
-    input_node_pairs.each do |node, input_value|
-      node.value = input_value
-    end
-
-    # Must run this in layers
-    #network.sorted_genes.each do |gene|
-    #  if gene.enabled
-    #    p gene
-    #    sum = 0
-    #    input_node = network.find_node gene.in
-    #    output_node = network.find_node gene.out
-    #    if input_node.value.nil?
-    #      p network.sorted_genes
-    #      p input_node
-    #      p output_node
-    #      p network
-    #    end
-    #    sum += input_node.value * gene.weight
-    #    output_node.value = sigmoid(sum)
-    #  end
+    #input_node_pairs = network.input_nodes.zip(tdata[:inputs])
+    ## These nodes aren't being referenced below when calling network.sorted_nodes
+    #input_node_pairs.each do |node, input_value|
+    #  node.value = input_value
     #end
 
-    network.sorted_nodes.each do |node|
+    network.sorted_nodes.each_with_index do |node, index|
+      if node.is_input_node?
+        node.value = tdata[:inputs][index]
+        next
+      end
+
       sum = 0
       node.input_node_ids.each do |input_node_id|
         connection = network.find_connection(input_node_id, node.id)
@@ -114,7 +107,7 @@ def generate_network genome
 end
 
 genome = Genome.new
-inputs = [1]
+inputs = [1, 2]
 outputs = [10000]
 genome.connect_all! inputs, outputs
 100.times do
